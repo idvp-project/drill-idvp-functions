@@ -18,10 +18,7 @@
 package org.apache.drill.exec.idvp.functions;
 
 import io.netty.buffer.DrillBuf;
-import org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers;
-import org.apache.drill.exec.expr.holders.VarCharHolder;
-
-import java.nio.charset.StandardCharsets;
+import org.apache.drill.exec.expr.holders.ValueHolder;
 
 /**
  * @author Oleg Zinoviev
@@ -30,28 +27,15 @@ import java.nio.charset.StandardCharsets;
 @SuppressWarnings("WeakerAccess")
 public class StringFunctionsImpl {
 
-    public static void toUpper(VarCharHolder input, VarCharHolder out, DrillBuf buffer) {
-        String string = StringFunctionHelpers.toStringFromUTF8(input.start, input.end, input.buffer);
+    public static void toUpper(ValueHolder input, ValueHolder out, DrillBuf buffer) {
+        String string = FunctionsHelper.asString(input);
         string = string.toUpperCase();
-
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-
-        out.buffer = buffer.reallocIfNeeded(bytes.length);
-        out.start = 0;
-        out.end = bytes.length;
-
-        out.buffer.writeBytes(bytes);
+        FunctionsHelper.writeString(string, buffer, out);
     }
 
-    public static void toLower(VarCharHolder input, VarCharHolder out, DrillBuf buffer) {
-        String string = StringFunctionHelpers.toStringFromUTF8(input.start, input.end, input.buffer);
+    public static void toLower(ValueHolder input, ValueHolder out, DrillBuf buffer) {
+        String string = FunctionsHelper.asString(input);
         string = string.toLowerCase();
-
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        out.buffer = buffer.reallocIfNeeded(bytes.length);
-        out.start = 0;
-        out.end = bytes.length;
-
-        out.buffer.writeBytes(bytes);
+        FunctionsHelper.writeString(string, buffer, out);
     }
 }
