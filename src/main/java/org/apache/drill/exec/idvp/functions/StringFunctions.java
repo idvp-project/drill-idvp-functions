@@ -38,12 +38,13 @@ public class StringFunctions {
     @FunctionTemplate(
             name = "to_upper",
             scope = FunctionTemplate.FunctionScope.SIMPLE,
-            nulls = FunctionTemplate.NullHandling.NULL_IF_NULL
+            nulls = FunctionTemplate.NullHandling.NULL_IF_NULL,
+            returnType = FunctionTemplate.ReturnType.SAME_IN_OUT_LENGTH
     )
     public static class UpperCase implements DrillSimpleFunc {
 
         @Param
-        VarCharHolder input;
+        VarCharHolder string1Param;
         @Output
         VarCharHolder out;
         @Inject
@@ -59,18 +60,28 @@ public class StringFunctions {
 
         @Override
         public void eval() {
-            org.apache.drill.exec.idvp.functions.StringFunctionsImpl.toUpper(input, out, buffer);
+            String result = org.apache.drill.exec.idvp.functions.StringFunctionsImpl.toUpper(string1Param);
+            byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            out.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
+            out.start = 0;
+            out.end = bytes.length;
+
+            for(int id = 0; id < bytes.length; ++id) {
+                byte currentByte = bytes[id];
+                out.buffer.setByte(id, currentByte);
+            }
         }
     }
 
     @FunctionTemplate(
             name = "to_lower",
             scope = FunctionTemplate.FunctionScope.SIMPLE,
-            nulls = FunctionTemplate.NullHandling.NULL_IF_NULL
+            nulls = FunctionTemplate.NullHandling.NULL_IF_NULL,
+            returnType = FunctionTemplate.ReturnType.SAME_IN_OUT_LENGTH
     )
     public static class LowerCase implements DrillSimpleFunc {
         @Param
-        VarCharHolder input;
+        VarCharHolder string1Param;
         @Output
         VarCharHolder out;
         @Inject
@@ -83,7 +94,16 @@ public class StringFunctions {
         }
 
         public void eval() {
-            org.apache.drill.exec.idvp.functions.StringFunctionsImpl.toLower(input, out, buffer);
+            String result = org.apache.drill.exec.idvp.functions.StringFunctionsImpl.toLower(string1Param);
+            byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            out.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
+            out.start = 0;
+            out.end = bytes.length;
+
+            for(int id = 0; id < bytes.length; ++id) {
+                byte currentByte = bytes[id];
+                out.buffer.setByte(id, currentByte);
+            }
         }
     }
 

@@ -17,7 +17,6 @@
  */
 package org.apache.drill.exec.idvp.functions;
 
-import io.netty.buffer.DrillBuf;
 import org.apache.drill.exec.expr.holders.ValueHolder;
 
 /**
@@ -27,15 +26,13 @@ import org.apache.drill.exec.expr.holders.ValueHolder;
 @SuppressWarnings("WeakerAccess")
 public class StringFunctionsImpl {
 
-    public static void toUpper(ValueHolder input, ValueHolder out, DrillBuf buffer) {
+    public static String toUpper(ValueHolder input) {
         String string = FunctionsHelper.asString(input);
-        string = string.toUpperCase();
-        FunctionsHelper.writeString(string, buffer, out);
+        return string.toUpperCase();
     }
 
-    public static void toLower(ValueHolder input, ValueHolder out, DrillBuf buffer) {
+    public static String toLower(ValueHolder input) {
         String string = FunctionsHelper.asString(input);
-        string = string.toLowerCase();
-        FunctionsHelper.writeString(string, buffer, out);
+        return string.toLowerCase();
     }
 }
