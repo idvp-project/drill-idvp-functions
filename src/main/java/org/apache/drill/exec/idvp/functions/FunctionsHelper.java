@@ -17,30 +17,19 @@
  */
 package org.apache.drill.exec.idvp.functions;
 
-import com.google.common.base.Charsets;
-import io.netty.buffer.DrillBuf;
-import org.apache.commons.io.IOUtils;
 import org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers;
 import org.apache.drill.exec.expr.holders.*;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.InputStream;
-import java.io.StringWriter;
 
 /**
  * @author Oleg Zinoviev
  * @since 22.06.2017.
  */
+@SuppressWarnings("WeakerAccess")
 public final class FunctionsHelper {
     private FunctionsHelper() {
     }
 
-    static String asString(ValueHolder source) {
+    public static String asString(ValueHolder source) {
         String result;
         if (source instanceof VarCharHolder) {
             VarCharHolder vch = (VarCharHolder) source;
