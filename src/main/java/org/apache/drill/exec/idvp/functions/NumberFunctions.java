@@ -26,7 +26,6 @@ import org.apache.drill.exec.expr.holders.Float8Holder;
 import org.apache.drill.exec.expr.holders.VarCharHolder;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 /**
  * @author Oleg Zinoviev
