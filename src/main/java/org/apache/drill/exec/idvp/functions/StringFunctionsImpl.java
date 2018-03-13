@@ -28,11 +28,17 @@ public class StringFunctionsImpl {
 
     public static String toUpper(ValueHolder input) {
         String string = FunctionsHelper.asString(input);
+        if (string == null) {
+            return null;
+        }
         return string.toUpperCase();
     }
 
     public static String toLower(ValueHolder input) {
         String string = FunctionsHelper.asString(input);
+        if (string == null) {
+            return null;
+        }
         return string.toLowerCase();
     }
 }
