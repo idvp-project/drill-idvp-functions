@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.apache.drill.contrib</groupId>
         <artifactId>drill-contrib-parent</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.0</version>
     </parent>
 
     <artifactId>drill-idvp-functions</artifactId>
@@ -50,6 +50,12 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <skipAssembly>true</skipAssembly>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -60,7 +66,8 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/classes/org/apache/drill/exec/idvp/functions</outputDirectory>
+                            <outputDirectory>${basedir}/target/classes/org/apache/drill/exec/idvp/functions
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/java/org/apache/drill/exec/idvp/functions</directory>
