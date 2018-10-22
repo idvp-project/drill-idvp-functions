@@ -24,6 +24,7 @@ import org.apache.drill.exec.expr.annotations.Output;
 import org.apache.drill.exec.expr.annotations.Param;
 import org.apache.drill.exec.expr.annotations.Workspace;
 import org.apache.drill.exec.expr.holders.NullableVarCharHolder;
+import org.apache.drill.exec.expr.holders.ObjectHolder;
 import org.apache.drill.exec.expr.holders.VarCharHolder;
 
 import javax.inject.Inject;
@@ -32,12 +33,12 @@ import javax.inject.Inject;
  * @author Oleg Zinoviev
  * @since 29.08.2017
  **/
-@SuppressWarnings({"unused", "Duplicates"})
+@SuppressWarnings({"unused", "Duplicates", "deprecation"})
 public class JoinFunctions {
     private JoinFunctions() {
     }
 
-    @FunctionTemplate(names = { "str_join", "strjoin", "megaStringerator4000" },
+    @FunctionTemplate(names = {"str_join", "strjoin", "megaStringerator4000"},
             scope = FunctionTemplate.FunctionScope.POINT_AGGREGATE,
             nulls = FunctionTemplate.NullHandling.INTERNAL)
     public static class NullableStringJoin implements DrillAggFunc {
@@ -47,7 +48,10 @@ public class JoinFunctions {
         VarCharHolder joinCharParam;
 
         @Workspace
-        NullableVarCharHolder holder;
+        ObjectHolder holder;
+
+        @Workspace
+        ObjectHolder empty;
 
         @Output
         NullableVarCharHolder out;
@@ -58,54 +62,40 @@ public class JoinFunctions {
 
         @Override
         public void setup() {
-            holder = new NullableVarCharHolder();
-            holder.isSet = 0;
+            holder = new ObjectHolder();
+            holder.obj = new StringBuilder();
+            empty = new ObjectHolder();
+            empty.obj = Boolean.TRUE;
         }
 
         @Override
         public void add() {
             String item = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(inParam);
             if (item != null) {
-                boolean first = holder.isSet == 0;
+                boolean first = Boolean.TRUE.equals(empty.obj);
+                StringBuilder sb = (StringBuilder) holder.obj;
 
-                String previous = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(holder);
-                if (previous == null) {
-                    previous = "";
+                String delimiter = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(joinCharParam);
+                if (delimiter == null) {
+                    delimiter = "";
                 }
 
-                String result;
-                if (first) {
-                    result = item;
-                } else {
-                    String delimiter = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(joinCharParam);
-                    if (delimiter == null) {
-                        delimiter = "";
-                    }
-                    result = previous + delimiter + item;
+                if (!first) {
+                    sb.append(delimiter);
                 }
 
-                byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-                holder.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
-                holder.isSet = 1;
-                holder.start = 0;
-                holder.end = bytes.length;
-
-                for (int id = 0; id < bytes.length; ++id) {
-                    byte currentByte = bytes[id];
-                    holder.buffer.setByte(id, currentByte);
-                }
+                sb.append(item);
+                empty.obj = Boolean.FALSE;
             }
         }
 
         @Override
         public void output() {
-            if (holder.isSet == 0) {
+            if (Boolean.TRUE.equals(empty.obj)) {
                 out.isSet = 0;
             } else {
-                String result = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(holder);
-                if (result == null) {
-                    result = "";
-                }
+                StringBuilder sb = (StringBuilder) holder.obj;
+                String result = sb.toString();
 
                 out.isSet = 1;
                 byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -117,14 +107,14 @@ public class JoinFunctions {
 
         @Override
         public void reset() {
-            holder.isSet = 0;
-            holder.start = 0;
-            holder.end = 0;
-            holder.buffer = null;
+            holder = new ObjectHolder();
+            holder.obj = new StringBuilder();
+            empty = new ObjectHolder();
+            empty.obj = Boolean.TRUE;
         }
     }
 
-    @FunctionTemplate(names = { "str_join", "strjoin", "megaStringerator4000" },
+    @FunctionTemplate(names = {"str_join", "strjoin", "megaStringerator4000"},
             scope = FunctionTemplate.FunctionScope.POINT_AGGREGATE,
             nulls = FunctionTemplate.NullHandling.INTERNAL)
     public static class StringJoin implements DrillAggFunc {
@@ -134,7 +124,10 @@ public class JoinFunctions {
         VarCharHolder joinCharParam;
 
         @Workspace
-        NullableVarCharHolder holder;
+        ObjectHolder holder;
+
+        @Workspace
+        ObjectHolder empty;
 
         @Output
         NullableVarCharHolder out;
@@ -145,54 +138,40 @@ public class JoinFunctions {
 
         @Override
         public void setup() {
-            holder = new NullableVarCharHolder();
-            holder.isSet = 0;
+            holder = new ObjectHolder();
+            holder.obj = new StringBuilder();
+            empty = new ObjectHolder();
+            empty.obj = Boolean.TRUE;
         }
 
         @Override
         public void add() {
             String item = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(inParam);
             if (item != null) {
-                boolean first = holder.isSet == 0;
+                boolean first = Boolean.TRUE.equals(empty.obj);
+                StringBuilder sb = (StringBuilder) holder.obj;
 
-                String previous = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(holder);
-                if (previous == null) {
-                    previous = "";
+                String delimiter = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(joinCharParam);
+                if (delimiter == null) {
+                    delimiter = "";
                 }
 
-                String result;
-                if (first) {
-                    result = item;
-                } else {
-                    String delimiter = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(joinCharParam);
-                    if (delimiter == null) {
-                        delimiter = "";
-                    }
-                    result = previous + delimiter + item;
+                if (!first) {
+                    sb.append(delimiter);
                 }
 
-                byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-                holder.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
-                holder.isSet = 1;
-                holder.start = 0;
-                holder.end = bytes.length;
-
-                for (int id = 0; id < bytes.length; ++id) {
-                    byte currentByte = bytes[id];
-                    holder.buffer.setByte(id, currentByte);
-                }
+                sb.append(item);
+                empty.obj = Boolean.FALSE;
             }
         }
 
         @Override
         public void output() {
-            if (holder.isSet == 0) {
+            if (Boolean.TRUE.equals(empty.obj)) {
                 out.isSet = 0;
             } else {
-                String result = org.apache.drill.exec.idvp.functions.FunctionsHelper.asString(holder);
-                if (result == null) {
-                    result = "";
-                }
+                StringBuilder sb = (StringBuilder) holder.obj;
+                String result = sb.toString();
 
                 out.isSet = 1;
                 byte[] bytes = result.getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -204,13 +183,12 @@ public class JoinFunctions {
 
         @Override
         public void reset() {
-            holder.isSet = 0;
-            holder.start = 0;
-            holder.end = 0;
-            holder.buffer = null;
+            holder = new ObjectHolder();
+            holder.obj = new StringBuilder();
+            empty = new ObjectHolder();
+            empty.obj = Boolean.TRUE;
         }
     }
-
 
 
 //    @FunctionTemplate(name = "join_list_to_string",
