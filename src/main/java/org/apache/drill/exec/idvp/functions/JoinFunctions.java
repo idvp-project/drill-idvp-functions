@@ -102,6 +102,7 @@ public class JoinFunctions {
                 out.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
                 out.start = 0;
                 out.end = bytes.length;
+                out.buffer.setBytes(0, bytes);
             }
         }
 
@@ -178,6 +179,7 @@ public class JoinFunctions {
                 out.buffer = buffer = buffer.reallocIfNeeded(bytes.length);
                 out.start = 0;
                 out.end = bytes.length;
+                out.buffer.setBytes(0, bytes);
             }
         }
 
